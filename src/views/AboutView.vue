@@ -1,4 +1,9 @@
+<script setup lang="ts">
+import MyMenu from '@/components/MyMenu.vue';
+</script>
+
 <template>
+  <MyMenu></MyMenu>
   <div class="about">
     <h1>This is an about page</h1>
   </div>

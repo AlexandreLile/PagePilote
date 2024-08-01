@@ -1,11 +1,13 @@
 <script setup>
-import MyTitle from '@/components/MyTitle.vue';
 
+import MyMenu from '@/components/MyMenu.vue';
+import MyGridStructure from '@/components/pageBuilderComponents/MyGridStructure.vue';
 
 </script>
 
 <template>
+  <MyMenu></MyMenu>
   <main>
-   <MyTitle></MyTitle>
+   <MyGridStructure></MyGridStructure>
   </main>
 </template>
