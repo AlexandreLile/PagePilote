@@ -18,7 +18,8 @@
   
   <script>
   import MyButton from '../MyButton.vue';
-
+  import { usePageStore } from '@/stores/componentsStore';
+  
 
   export default {
     data() {
@@ -29,17 +30,19 @@
           {
             text: "Menu",
             size: "builder",
+            onClick: () => this.addComponent({ type: "MyMenu", props: {} })
             
           },
           {
             text: "Hero",
             size: "builder",
+            onClick: () => this.addComponent({ type: "MyHero", props: {} })
             
           },
           {
-            text: "Carte",
+            text: "Items",
             size: "builder",
-            
+            onClick: () => this.addComponent({ type: "MyItems", props: {} })
           },
           {
             text: "Texte",
@@ -58,6 +61,11 @@
           },
         ],
       };
+    }, methods:{
+        addComponent(component) {
+            const pageStore = usePageStore();
+            pageStore.addComponent(component);
+        }
     },
     computed: {
     sortedButtons() {
@@ -77,7 +85,8 @@
   },
 
     components: {
-     MyButton
+     MyButton,
+     
     },
   };
   </script>
