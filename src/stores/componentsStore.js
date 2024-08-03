@@ -10,5 +10,10 @@ export const usePageStore = defineStore('page', {
         const newComponent = { ...component, id : uuidv4()};
       this.components.push(newComponent);
     },
+
+    updateComponentsOrder(updatedComponents) {
+        this.components = [...updatedComponents];
+      },
+  
   },
 });

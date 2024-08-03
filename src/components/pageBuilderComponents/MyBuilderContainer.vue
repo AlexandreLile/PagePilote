@@ -1,29 +1,54 @@
 <template>
     <div class="container">
-     <div v-for="component in pageComponents" :key="component.id">
-      <component :is="component.type" v-bind="component.props"></component>
-      <p class="component-id">ID: {{ component.id }}</p>
-    </div>
+      <draggable
+        v-model="draggableComponentsList"
+        @end="handleListChange"
+        item-key="id"
+      >
+        <template #item="{ element }">
+          <component
+            :is="element.type"
+            :key="element.id"
+            v-bind="element.props"
+          >
+            <p class="component-id">ID: {{ element.id }}</p>
+          </component>
+        </template>
+      </draggable>
     </div>
   </template>
   
   <script>
-import { usePageStore } from '@/stores/componentsStore';
-import MyHero from './MyHero.vue';
-  
+  import { usePageStore } from '@/stores/componentsStore';
+  import MyHero from './MyHero.vue';
+  import MyItems from './MyItems.vue';
+  import Draggable from 'vuedraggable';
   
   export default {
-    setup() {
-        const pageStore = usePageStore();
-
-      return {
-        pageComponents: pageStore.components,
-      };
-    },components:{
-        MyHero
+    components: {
+      MyHero,
+      Draggable,
+      MyItems
+    },
+    computed: {
+      pageStore() {
+        return usePageStore();
+      },
+      draggableComponentsList: {
+        get() {
+          return this.pageStore.components;
+        },
+        set(value) {
+          this.pageStore.updateComponentsOrder(value);
+        }
+      }
+    },
+    methods: {
+      
     }
   };
   </script>
+  
   
   <style scoped>
   .container {
