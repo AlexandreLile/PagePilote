@@ -3,10 +3,16 @@
     <draggable
       v-model="draggableComponentsList"
       @end="handleListChange"
+      :disabled="!isDraggable"
       item-key="id"
     >
       <template #item="{ element }">
-        <component :is="element.type" :id="element.id" v-bind="element" />
+        <component
+          :is="element.type"
+          :id="element.id"
+          v-bind="element"
+          @toggle-draggable="toggleDraggable"
+        />
       </template>
     </draggable>
   </div>
@@ -18,6 +24,11 @@ import MyHero from "./MyHero.vue";
 import Draggable from "vuedraggable";
 
 export default {
+  data() {
+    return {
+      isDraggable: true,
+    };
+  },
   components: {
     MyHero,
     Draggable,
@@ -38,6 +49,9 @@ export default {
   methods: {
     handleListChange() {
       this.pageStore.saveComponentsToLocalStorage();
+    },
+    toggleDraggable(state) {
+      this.isDraggable = state;
     },
   },
   mounted() {
