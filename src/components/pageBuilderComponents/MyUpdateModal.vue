@@ -54,7 +54,7 @@ export default {
 }
 .update_modal {
   background-color: white;
-  padding: 20px;
+  padding: 0 20px 20px 20px;
   z-index: 1000;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
@@ -70,7 +70,10 @@ export default {
   justify-content: flex-end;
   align-items: center;
   gap: 5px;
-  padding-bottom: 20px;
+  padding: 20px;
+  position: sticky;
+  top: 0;
+  background-color: #fff;
 }
 
 .slot {

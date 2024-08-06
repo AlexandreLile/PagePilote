@@ -21,6 +21,7 @@
 <script>
 import { usePageStore } from "@/stores/componentsStore";
 import MyHero from "./MyHero.vue";
+import MyItems from "./MyItems.vue";
 import Draggable from "vuedraggable";
 
 export default {
@@ -31,6 +32,7 @@ export default {
   },
   components: {
     MyHero,
+    MyItems,
     Draggable,
   },
   computed: {
