@@ -23,6 +23,8 @@ import { usePageStore } from "@/stores/componentsStore";
 import MyHero from "./MyHero.vue";
 import MyItems from "./MyItems.vue";
 import Draggable from "vuedraggable";
+import axios from "axios";
+import { useRoute } from "vue-router";
 
 export default {
   data() {
@@ -55,9 +57,26 @@ export default {
     toggleDraggable(state) {
       this.isDraggable = state;
     },
+    async loadPageData(pageId) {
+      try {
+        await this.pageStore.loadPageComponents(pageId);
+      } catch (error) {
+        console.error(
+          "Erreur lors du chargement des données de la page:",
+          error
+        );
+      }
+    },
   },
   mounted() {
-    this.pageStore.loadComponentsFromLocalStorage();
+    const route = useRoute();
+    const pageId = route.params.pageId; // Assurez-vous que `pageId` est bien défini dans les paramètres de la route
+    if (pageId) {
+      this.pageStore.pageId = pageId; // Assurez-vous que le `pageId` est défini dans le store
+      this.loadPageData(pageId); // Assurez-vous que cette méthode existe
+    } else {
+      console.error("Page ID is missing from route parameters.");
+    }
   },
 };
 </script>

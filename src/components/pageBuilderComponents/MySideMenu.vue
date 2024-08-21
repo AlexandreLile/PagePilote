@@ -33,12 +33,20 @@ export default {
         {
           text: "Hero",
           size: "builder",
-          onClick: () => this.addComponent({ type: "MyHero", props: {} }),
+          onClick: () => {
+            this.addComponent({ type: "MyHero", props: {} });
+
+            // Recharger les données de la page
+            location.reload();
+          },
         },
         {
           text: "Items",
           size: "builder",
-          onClick: () => this.addComponent({ type: "MyItems", props: {} }),
+          onClick: () => {
+            this.addComponent({ type: "MyItems", props: {} });
+            location.reload();
+          },
         },
         {
           text: "Texte",

@@ -161,15 +161,15 @@ export default {
       },
     };
   },
-  // computed: {
-  //   computedStyle() {
-  //     return {
-  //       color: this.style.color,
-  //       backgroundColor: this.style.backgroundColor,
-  //       fontSize: this.style.fontSize,
-  //     };
-  //   },
-  // },
+  computed: {
+    computedStyle() {
+      return {
+        color: this.style.color,
+        backgroundColor: this.style.backgroundColor,
+        fontSize: this.style.fontSize,
+      };
+    },
+  },
   methods: {
     updateContent(propertyName, event) {
       this.content[propertyName] = event.target.innerText;
