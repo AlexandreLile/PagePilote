@@ -16,6 +16,7 @@ const routes = [
   { path: "/inscription", component: singUpView },
   {
     path: "/dashboard",
+    name: "Dashboard",
     component: DashboardView,
     meta: { requiresAuth: true },
   },

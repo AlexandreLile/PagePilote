@@ -1,28 +1,23 @@
 <template>
   <div class="container_builder">
-    <section class="hero">
-      <div class="container_content">
-        <div class="position_content">
-          <h1
+    <section class="two_col" :style="{ background: style.backgroundColor }">
+      <div
+        class="container_two_col"
+        :class="{ 'row-reverse': content.dislayImgRight }"
+      >
+        <div class="content_two_col">
+          <h2
             :style="{
               fontSize: style.titleFontSize + 'rem',
               color: style.titleColor,
             }"
-            contenteditable="true"
-            @input="updateContent('title', $event)"
           >
             {{ content.title }}
-          </h1>
-          <h2
-            contenteditable="true"
-            @input="updateContent('subTitle', $event)"
-            :style="{
-              fontSize: style.subTitleSize + 'rem',
-              color: style.subTitleColor,
-            }"
-          >
-            {{ content.subTitle }}
           </h2>
+
+          <p :style="{ color: style.paragraphColor }">
+            {{ content.paragraph }}
+          </p>
           <a
             :style="{
               color: style.btnTextColor,
@@ -36,9 +31,9 @@
             >{{ content.btnText }}</a
           >
         </div>
-      </div>
-      <div class="container_img">
-        <img :src="content.img" alt="" />
+        <div class="container_img">
+          <img :src="content.img" alt="" />
+        </div>
       </div>
       <MyButton
         @click="openUpdateModal"
@@ -54,6 +49,14 @@
         @deleteComp="deleteComponent"
       >
         <template #group>
+          <h4>Couleur de fond</h4>
+          <div class="separator">
+            <input type="color" v-model="style.backgroundColor" />
+          </div>
+          <h4>Mettre l'image à droite</h4>
+          <div class="separator">
+            <input type="checkbox" v-model="content.dislayImgRight" />
+          </div>
           <h4>Titre Principal</h4>
           <div class="separator">
             <input type="text" v-model="content.title" />
@@ -72,23 +75,13 @@
             <p>Couleur</p>
             <input type="color" v-model="style.titleColor" />
           </div>
-          <h4>Sous Titre</h4>
+          <h4>Paragraphe</h4>
           <div class="separator">
-            <input type="text" v-model="content.subTitle" />
+            <textarea type="text" v-model="content.paragraph"> </textarea>
           </div>
           <div class="separator">
-            <p>taille</p>
-            <input
-              type="number"
-              v-model="style.subTitleSize"
-              step="0.25"
-              min="1"
-              max="5"
-            />
-          </div>
-          <div class="separator">
-            <p>Couleur</p>
-            <input type="color" v-model="style.subTitleColor" />
+            <p>Couleur du paragraphe</p>
+            <input type="color" v-model="style.paragraphColor" />
           </div>
 
           <div class="separator">
@@ -126,7 +119,6 @@
 import { usePageStore } from "@/stores/componentsStore";
 import MyButton from "../MyButton.vue";
 import MyUpdateModal from "./MyUpdateModal.vue";
-import Compressor from "compressorjs";
 
 export default {
   props: {
@@ -150,6 +142,9 @@ export default {
         link: "",
         btnText: "Call to action",
         showLink: true,
+        dislayImgRight: false,
+        paragraph:
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard",
       },
       style: {
         titleColor: "#00000",
@@ -159,6 +154,7 @@ export default {
         subTitleColor: "#000",
         btnTextColor: "#fff",
         btnBackgroundColor: "#000",
+        paragraphColor: "#000",
       },
     };
   },
@@ -247,31 +243,33 @@ export default {
 </script>
 
 <style scoped>
-.hero {
-  min-height: 50vh;
-  height: auto;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.two_col {
+  padding: 100px 0;
 }
-.container_content {
-  padding: 20px;
+.container_two_col {
   display: flex;
   justify-content: center;
-  flex-direction: column;
   align-items: center;
-  height: 100%;
-  flex: 1;
-  width: 100%;
+  gap: 25px;
+
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
 }
 
-.position_content {
+.row-reverse {
+  flex-direction: row-reverse;
+}
+
+.content_two_col {
+  gap: 10px;
+  text-align: center;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   flex-direction: column;
-  gap: 10px;
+  flex: 1;
+  text-align: left;
 }
 .container_img {
   height: 100%;
@@ -282,7 +280,7 @@ export default {
   display: block;
   max-width: 100%;
   height: 100%;
-  min-height: 50vh;
+
   object-fit: cover;
 }
 .btn_edit {

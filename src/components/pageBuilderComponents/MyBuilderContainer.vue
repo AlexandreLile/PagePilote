@@ -22,6 +22,10 @@
 import { usePageStore } from "@/stores/componentsStore";
 import MyHero from "./MyHero.vue";
 import MyItems from "./MyItems.vue";
+import MyText from "./MyText.vue";
+import MyDoubleColumn from "./MyDoubleColumn.vue";
+import MyImgFullWidth from "./MyImgFullWidth.vue";
+import MyMenuBuilder from "./MyMenuBuilder.vue";
 import Draggable from "vuedraggable";
 import axios from "axios";
 import { useRoute } from "vue-router";
@@ -36,6 +40,10 @@ export default {
     MyHero,
     MyItems,
     Draggable,
+    MyText,
+    MyDoubleColumn,
+    MyImgFullWidth,
+    MyMenuBuilder,
   },
   computed: {
     pageStore() {
@@ -52,7 +60,7 @@ export default {
   },
   methods: {
     handleListChange() {
-      this.pageStore.saveComponentsToLocalStorage();
+      this.pageStore.saveComponentsToDatabase();
     },
     toggleDraggable(state) {
       this.isDraggable = state;
@@ -70,10 +78,10 @@ export default {
   },
   mounted() {
     const route = useRoute();
-    const pageId = route.params.pageId; // Assurez-vous que `pageId` est bien défini dans les paramètres de la route
+    const pageId = route.params.pageId;
     if (pageId) {
-      this.pageStore.pageId = pageId; // Assurez-vous que le `pageId` est défini dans le store
-      this.loadPageData(pageId); // Assurez-vous que cette méthode existe
+      this.pageStore.pageId = pageId;
+      this.loadPageData(pageId);
     } else {
       console.error("Page ID is missing from route parameters.");
     }

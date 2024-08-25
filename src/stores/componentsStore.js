@@ -26,10 +26,10 @@ export const usePageStore = defineStore("page", {
           }
         );
         this.components = response.data;
-        this.saveComponentsToLocalStorage();
+        // this.saveComponentsToLocalStorage();
       } catch (error) {
         console.error("Erreur lors du chargement des composants :", error);
-        this.loadComponentsFromLocalStorage();
+        // this.loadComponentsFromLocalStorage();
       }
     },
     //Enregistrer le tableau en Base de donnée en l'associant à l'ID de la page
@@ -65,6 +65,7 @@ export const usePageStore = defineStore("page", {
         style: component.style || {},
       };
       this.components.push(newComponent);
+
       // this.saveComponentsToLocalStorage();
       this.saveComponentsToDatabase();
     },

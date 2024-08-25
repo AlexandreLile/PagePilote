@@ -1,59 +1,28 @@
 <template>
   <header>
     <div class="logo">
-      <svg
-        viewBox="0 0 923 1049"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <rect
-          x="593.517"
-          width="144.495"
-          height="1040.37"
-          transform="rotate(5 593.517 0)"
-          fill="#2B303A"
-        />
-        <rect
-          x="90.6738"
-          width="144.495"
-          height="1040.37"
-          transform="rotate(5 90.6738 0)"
-          fill="#2B303A"
-        />
-        <rect
-          x="778.924"
-          y="22.1296"
-          width="144.495"
-          height="520.183"
-          transform="rotate(5 778.924 22.1296)"
-          fill="#2B303A"
-        />
-        <rect
-          x="276.081"
-          y="22.1296"
-          width="144.495"
-          height="520.183"
-          transform="rotate(5 276.081 22.1296)"
-          fill="#2B303A"
-        />
-      </svg>
+      <img src="/public/Logo.svg" alt="Logo de Page Pilote" />
     </div>
     <nav>
       <RouterLink v-if="isAuthenticated" class="menu_link" to="/dashboard">
         Dashboard
       </RouterLink>
-      <button v-if="isAuthenticated && isPageBuilder" class="menu_link">
-        Enregistrer
+      <button
+        v-if="isAuthenticated && isPageBuilder"
+        class="menu_link"
+        @click="renderView"
+      >
+        Visualiser
         <!-- SVG Content -->
       </button>
-      <button v-if="isAuthenticated" class="menu_link" @click="logout">
+      <button
+        v-if="isAuthenticated && isDashboard"
+        class="menu_link"
+        @click="logout"
+      >
         Déconnexion
         <!-- SVG Content -->
       </button>
-      <a v-if="isAuthenticated" href="#" class="menu_link">
-        Paramètres
-        <!-- SVG Content -->
-      </a>
       <RouterLink class="menu_link" v-if="!isAuthenticated" to="/connexion">
         Connexion
       </RouterLink>
@@ -93,6 +62,15 @@ export default {
           alert("Erreur lors de l'enregistrement. Veuillez réessayer.");
         });
     },
+
+    renderView() {
+      const pageId = this.$route.params.pageId; // Accéder au paramètre pageId
+      if (pageId) {
+        window.open(`http://localhost:3000/page/${pageId}`, "_blank");
+      } else {
+        alert("ID de page non défini.");
+      }
+    },
     logout() {
       localStorage.removeItem("token");
       this.isAuthenticated = false;
@@ -106,6 +84,11 @@ export default {
     isPageBuilder() {
       const route = useRoute();
       return route.name === "PageBuilder";
+    },
+
+    isDashboard() {
+      const route = useRoute();
+      return route.name === "Dashboard";
     },
   },
   watch: {
@@ -130,7 +113,7 @@ header {
   z-index: 999;
 }
 .logo {
-  width: 30px;
+  width: 40px;
 }
 
 nav {

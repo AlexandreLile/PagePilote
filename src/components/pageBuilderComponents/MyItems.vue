@@ -11,7 +11,7 @@
             @input="updateContent('title1', $event)"
             :style="{
               color: style.title1Color,
-              fontSize: style.title1Size + 'rem',
+              fontSize: style.titleSize + 'rem',
             }"
           >
             {{ content.title1 }}
@@ -27,7 +27,7 @@
           <h3
             :style="{
               color: style.title2Color,
-              fontSize: style.title2Size + 'rem',
+              fontSize: style.titleSize + 'rem',
             }"
           >
             {{ content.title2 }}
@@ -43,7 +43,7 @@
           <h3
             :style="{
               color: style.title3Color,
-              fontSize: style.title3Size + 'rem',
+              fontSize: style.titleSize + 'rem',
             }"
           >
             {{ content.title3 }}
@@ -77,24 +77,24 @@
             <input type="color" v-model="style.backgroundColorCard" />
           </div>
           <div class="separator">
-            <p>Couleur des paragraphes</p>
-            <input type="color" v-model="style.paragraphColor" />
-          </div>
-
-          <h4>Carte 1</h4>
-          <div class="separator">
-            <input type="text" v-model="content.title1" />
-          </div>
-          <div class="separator">
-            <p>taille</p>
+            <p>taille des titres</p>
             <input
               type="number"
-              v-model="style.title1Size"
+              v-model="style.titleSize"
               step="0.25"
               min="1"
               max="5"
             />
           </div>
+          <div class="separator">
+            <p>Couleur des paragraphes</p>
+            <input type="color" v-model="style.paragraphColor" />
+          </div>
+          <h4>Carte 1</h4>
+          <div class="separator">
+            <input type="text" v-model="content.title1" />
+          </div>
+
           <div class="separator">
             <p>Couleur</p>
             <input type="color" v-model="style.title1Color" />
@@ -108,16 +108,7 @@
           <div class="separator">
             <input type="text" v-model="content.title2" />
           </div>
-          <div class="separator">
-            <p>taille</p>
-            <input
-              type="number"
-              v-model="style.subTitleSize"
-              step="0.25"
-              min="1"
-              max="5"
-            />
-          </div>
+
           <div class="separator">
             <p>Couleur</p>
             <input type="color" v-model="style.title2Color" />
@@ -130,16 +121,6 @@
           <h4>Carte 3</h4>
           <div class="separator">
             <input type="text" v-model="content.title3" />
-          </div>
-          <div class="separator">
-            <p>taille</p>
-            <input
-              type="number"
-              v-model="style.subTitleSize"
-              step="0.25"
-              min="1"
-              max="5"
-            />
           </div>
           <div class="separator">
             <p>Couleur</p>
@@ -190,10 +171,7 @@ export default {
       style: {
         titleColor: "#00000",
         backgroundColor: "#ffffff",
-        titleFontSize: "2rem",
-        title1Size: "1.5rem",
-        title2Size: "1.5rem",
-        title3Size: "1.5rem",
+        titleFontSize: "1.5rem",
         title1Color: "#000",
         title2Color: "#000",
         title3Color: "#000",
@@ -236,8 +214,8 @@ export default {
       const pageStore = usePageStore();
       const component = pageStore.components.find((c) => c.id === this.id);
       if (component) {
-        this.content = component.content || this.content;
-        this.style = component.style || this.style;
+        this.content = { ...this.content, ...component.content };
+        this.style = { ...this.style, ...component.style };
       }
     },
 
@@ -263,6 +241,11 @@ export default {
   },
   mounted() {
     this.loadFromStore();
+  },
+  watch: {
+    id(newId) {
+      this.loadFromStore(); // Recharger les données si l'ID change
+    },
   },
 };
 </script>

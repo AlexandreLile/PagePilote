@@ -1,44 +1,30 @@
 <template>
   <div class="container_builder">
-    <section class="hero">
-      <div class="container_content">
-        <div class="position_content">
-          <h1
-            :style="{
-              fontSize: style.titleFontSize + 'rem',
-              color: style.titleColor,
-            }"
-            contenteditable="true"
-            @input="updateContent('title', $event)"
-          >
-            {{ content.title }}
-          </h1>
-          <h2
-            contenteditable="true"
-            @input="updateContent('subTitle', $event)"
-            :style="{
-              fontSize: style.subTitleSize + 'rem',
-              color: style.subTitleColor,
-            }"
-          >
-            {{ content.subTitle }}
-          </h2>
-          <a
-            :style="{
-              color: style.btnTextColor,
-              background: style.btnBackgroundColor,
-            }"
-            v-if="content.showLink"
-            class="link_builder"
-            :href="content.link"
-            target="_blank"
-            rel="noopener noreferrer"
-            >{{ content.btnText }}</a
-          >
-        </div>
-      </div>
-      <div class="container_img">
-        <img :src="content.img" alt="" />
+    <section class="text" :style="{ backgroundColor: style.backgroundColor }">
+      <div class="container_txt">
+        <h2
+          :style="{
+            color: style.titleColor,
+            fontSize: style.titleFontSize + 'rem',
+          }"
+        >
+          {{ content.title }}
+        </h2>
+        <p :style="{ color: style.paragraphColor }">
+          {{ content.paragraph }}
+        </p>
+        <a
+          :style="{
+            color: style.btnTextColor,
+            background: style.btnBackgroundColor,
+          }"
+          v-if="content.showLink"
+          class="link_builder"
+          :href="content.link"
+          target="_blank"
+          rel="noopener noreferrer"
+          >{{ content.btnText }}</a
+        >
       </div>
       <MyButton
         @click="openUpdateModal"
@@ -54,6 +40,10 @@
         @deleteComp="deleteComponent"
       >
         <template #group>
+          <h4>Couleur de fond</h4>
+          <div class="separator">
+            <input type="color" v-model="style.backgroundColor" />
+          </div>
           <h4>Titre Principal</h4>
           <div class="separator">
             <input type="text" v-model="content.title" />
@@ -72,28 +62,13 @@
             <p>Couleur</p>
             <input type="color" v-model="style.titleColor" />
           </div>
-          <h4>Sous Titre</h4>
+          <h4>Paragraphe</h4>
           <div class="separator">
-            <input type="text" v-model="content.subTitle" />
+            <textarea type="text" v-model="content.paragraph"> </textarea>
           </div>
           <div class="separator">
-            <p>taille</p>
-            <input
-              type="number"
-              v-model="style.subTitleSize"
-              step="0.25"
-              min="1"
-              max="5"
-            />
-          </div>
-          <div class="separator">
-            <p>Couleur</p>
-            <input type="color" v-model="style.subTitleColor" />
-          </div>
-
-          <div class="separator">
-            <p>Image</p>
-            <input type="file" @change="onImageChange" accept="image/*" />
+            <p>Couleur du paragraphe</p>
+            <input type="color" v-model="style.paragraphColor" />
           </div>
           <h4>Bouton</h4>
           <div class="separator">
@@ -126,7 +101,6 @@
 import { usePageStore } from "@/stores/componentsStore";
 import MyButton from "../MyButton.vue";
 import MyUpdateModal from "./MyUpdateModal.vue";
-import Compressor from "compressorjs";
 
 export default {
   props: {
@@ -145,7 +119,8 @@ export default {
 
       content: {
         title: "Titre Principal",
-        subTitle: "Sous Titre",
+        paragraph:
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard",
         img: "/public/DefaultImg.jpg",
         link: "",
         btnText: "Call to action",
@@ -155,8 +130,8 @@ export default {
         titleColor: "#00000",
         backgroundColor: "#ffffff",
         titleFontSize: "2rem",
-        subTitleSize: "1.5rem",
-        subTitleColor: "#000",
+        paragraphColor: "#000",
+
         btnTextColor: "#fff",
         btnBackgroundColor: "#000",
       },
@@ -240,50 +215,26 @@ export default {
   },
   watch: {
     id(newId) {
-      this.loadFromStore();
+      this.loadFromStore(); // Recharger les données si l'ID change
     },
   },
 };
 </script>
 
 <style scoped>
-.hero {
-  min-height: 50vh;
-  height: auto;
-  width: 100%;
+.text {
+  padding: 100px 0;
+}
+
+.container_txt {
+  padding: 0 20px;
+  max-width: 1400px;
+  text-align: center;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-.container_content {
-  padding: 20px;
-  display: flex;
-  justify-content: center;
   flex-direction: column;
-  align-items: center;
-  height: 100%;
-  flex: 1;
-  width: 100%;
-}
-
-.position_content {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  flex-direction: column;
-  gap: 10px;
-}
-.container_img {
-  height: 100%;
-  flex: 1;
-}
-
-.container_img img {
-  display: block;
-  max-width: 100%;
-  height: 100%;
-  min-height: 50vh;
-  object-fit: cover;
+  gap: 25px;
 }
 .btn_edit {
   position: absolute;
@@ -309,13 +260,5 @@ input[type="color"] {
 input[type="checkbox"] {
   width: 10%;
   height: 30px;
-}
-@media (max-width: 1000px) {
-  .hero {
-    flex-direction: column;
-  }
-  .container_content {
-    text-align: center;
-  }
 }
 </style>

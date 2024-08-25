@@ -1,28 +1,23 @@
 <template>
   <div class="container_builder">
-    <section class="hero">
-      <div class="container_content">
-        <div class="position_content">
-          <h1
+    <section class="img_full_width" :style="backgroundStyle">
+      <div
+        class="container_img_full_width"
+        :class="[style.selectedContentPosition, style.selectedOpacity]"
+      >
+        <div class="content_img_full_width">
+          <h2
             :style="{
               fontSize: style.titleFontSize + 'rem',
               color: style.titleColor,
             }"
-            contenteditable="true"
-            @input="updateContent('title', $event)"
           >
             {{ content.title }}
-          </h1>
-          <h2
-            contenteditable="true"
-            @input="updateContent('subTitle', $event)"
-            :style="{
-              fontSize: style.subTitleSize + 'rem',
-              color: style.subTitleColor,
-            }"
-          >
-            {{ content.subTitle }}
           </h2>
+
+          <p :style="{ color: style.paragraphColor }">
+            {{ content.paragraph }}
+          </p>
           <a
             :style="{
               color: style.btnTextColor,
@@ -36,9 +31,6 @@
             >{{ content.btnText }}</a
           >
         </div>
-      </div>
-      <div class="container_img">
-        <img :src="content.img" alt="" />
       </div>
       <MyButton
         @click="openUpdateModal"
@@ -54,6 +46,14 @@
         @deleteComp="deleteComponent"
       >
         <template #group>
+          <h4>Couleur de fond</h4>
+          <div class="separator">
+            <input type="color" v-model="style.backgroundColor" />
+          </div>
+          <h4>Mettre l'image à droite</h4>
+          <div class="separator">
+            <input type="checkbox" v-model="content.dislayImgRight" />
+          </div>
           <h4>Titre Principal</h4>
           <div class="separator">
             <input type="text" v-model="content.title" />
@@ -72,23 +72,13 @@
             <p>Couleur</p>
             <input type="color" v-model="style.titleColor" />
           </div>
-          <h4>Sous Titre</h4>
+          <h4>Paragraphe</h4>
           <div class="separator">
-            <input type="text" v-model="content.subTitle" />
+            <textarea type="text" v-model="content.paragraph"> </textarea>
           </div>
           <div class="separator">
-            <p>taille</p>
-            <input
-              type="number"
-              v-model="style.subTitleSize"
-              step="0.25"
-              min="1"
-              max="5"
-            />
-          </div>
-          <div class="separator">
-            <p>Couleur</p>
-            <input type="color" v-model="style.subTitleColor" />
+            <p>Couleur du paragraphe</p>
+            <input type="color" v-model="style.paragraphColor" />
           </div>
 
           <div class="separator">
@@ -116,6 +106,21 @@
             <p>Couleur de fond du bouton</p>
             <input type="color" v-model="style.btnBackgroundColor" />
           </div>
+          <div class="separator">
+            <p>Position du contenu</p>
+            <select v-model="style.selectedContentPosition">
+              <option value="flex-start">Aligner à gauche</option>
+              <option value="center">Centrer</option>
+              <option value="flex-end">Aligner à droite</option>
+            </select>
+          </div>
+          <div class="separator">
+            <p>Opacité</p>
+            <select v-model="style.selectedOpacity">
+              <option value="light">Claire</option>
+              <option value="dark">Foncé</option>
+            </select>
+          </div>
         </template>
       </MyUpdateModal>
     </section>
@@ -126,7 +131,6 @@
 import { usePageStore } from "@/stores/componentsStore";
 import MyButton from "../MyButton.vue";
 import MyUpdateModal from "./MyUpdateModal.vue";
-import Compressor from "compressorjs";
 
 export default {
   props: {
@@ -146,10 +150,12 @@ export default {
       content: {
         title: "Titre Principal",
         subTitle: "Sous Titre",
-        img: "/public/DefaultImg.jpg",
+        backgroundImg: `/public/DefaultImg.jpg`,
         link: "",
         btnText: "Call to action",
         showLink: true,
+        paragraph:
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard",
       },
       style: {
         titleColor: "#00000",
@@ -159,6 +165,9 @@ export default {
         subTitleColor: "#000",
         btnTextColor: "#fff",
         btnBackgroundColor: "#000",
+        paragraphColor: "#000",
+        selectedContentPosition: "flex-start",
+        selectedOpacity: "light",
       },
     };
   },
@@ -168,6 +177,13 @@ export default {
         color: this.style.color,
         backgroundColor: this.style.backgroundColor,
         fontSize: this.style.fontSize,
+      };
+    },
+    backgroundStyle() {
+      return {
+        backgroundImage: `url(${this.content.backgroundImg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
       };
     },
   },
@@ -227,7 +243,7 @@ export default {
         const reader = new FileReader();
 
         reader.onload = (e) => {
-          this.content.img = e.target.result;
+          this.content.backgroundImg = e.target.result;
           this.updateStoreContent();
         };
 
@@ -247,43 +263,51 @@ export default {
 </script>
 
 <style scoped>
-.hero {
-  min-height: 50vh;
-  height: auto;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.container_content {
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
+.img_full_width {
   height: 100%;
-  flex: 1;
-  width: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.position_content {
+.container_img_full_width {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  min-height: 50vh;
+}
+
+.content_img_full_width {
   display: flex;
   justify-content: center;
   align-items: flex-start;
   flex-direction: column;
-  gap: 10px;
-}
-.container_img {
-  height: 100%;
-  flex: 1;
+  gap: 15px;
+  max-width: 500px;
+  padding: 0 20px;
 }
 
-.container_img img {
-  display: block;
-  max-width: 100%;
-  height: 100%;
-  min-height: 50vh;
-  object-fit: cover;
+.flex-start {
+  justify-content: flex-start;
+}
+
+.center {
+  justify-content: center;
+}
+
+.flex-end {
+  justify-content: flex-end;
+}
+
+.light {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dark {
+  background: rgba(0, 0, 0, 0.3);
 }
 .btn_edit {
   position: absolute;

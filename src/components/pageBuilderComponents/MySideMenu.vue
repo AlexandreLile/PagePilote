@@ -28,16 +28,16 @@ export default {
         {
           text: "Menu",
           size: "builder",
-          onClick: () => this.addComponent({ type: "MyMenu", props: {} }),
+          onClick: () => {
+            this.addComponent({ type: "MyMenuBuilder", props: {} });
+            // location.reload();
+          },
         },
         {
           text: "Hero",
           size: "builder",
           onClick: () => {
             this.addComponent({ type: "MyHero", props: {} });
-
-            // Recharger les données de la page
-            location.reload();
           },
         },
         {
@@ -45,20 +45,32 @@ export default {
           size: "builder",
           onClick: () => {
             this.addComponent({ type: "MyItems", props: {} });
-            location.reload();
+            // location.reload();
           },
         },
         {
           text: "Texte",
           size: "builder",
+          onClick: () => {
+            this.addComponent({ type: "MyText", props: {} });
+            // location.reload();
+          },
         },
         {
           text: "Image pleine largeur",
           size: "builder",
+          onClick: () => {
+            this.addComponent({ type: "MyImgFullWidth", props: {} });
+            // location.reload();
+          },
         },
         {
           text: "Image et texte",
           size: "builder",
+          onClick: () => {
+            this.addComponent({ type: "MyDoubleColumn", props: {} });
+            // location.reload();
+          },
         },
       ],
     };
@@ -67,6 +79,8 @@ export default {
     addComponent(component) {
       const pageStore = usePageStore();
       pageStore.addComponent(component);
+      console.log("Composant ajouté:", component);
+      console.log("Tous les composants:", pageStore.components);
     },
   },
   computed: {
