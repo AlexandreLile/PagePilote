@@ -112,4 +112,10 @@ export const usePageStore = defineStore("page", {
     //   }
     // },
   },
+
+  addTemplate(template) {
+    template.components.forEach((component) => {
+      this.addComponent(component);
+    });
+  },
 });

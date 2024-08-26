@@ -30,7 +30,6 @@ export default {
           size: "builder",
           onClick: () => {
             this.addComponent({ type: "MyMenuBuilder", props: {} });
-            // location.reload();
           },
         },
         {
@@ -41,11 +40,24 @@ export default {
           },
         },
         {
+          text: "Hero arche",
+          size: "builder",
+          onClick: () => {
+            this.addComponent({ type: "MyHeroTemplate1", props: {} });
+          },
+        },
+        {
           text: "Items",
           size: "builder",
           onClick: () => {
             this.addComponent({ type: "MyItems", props: {} });
-            // location.reload();
+          },
+        },
+        {
+          text: "Items icones",
+          size: "builder",
+          onClick: () => {
+            this.addComponent({ type: "MyItemsIcons", props: {} });
           },
         },
         {
@@ -53,7 +65,13 @@ export default {
           size: "builder",
           onClick: () => {
             this.addComponent({ type: "MyText", props: {} });
-            // location.reload();
+          },
+        },
+        {
+          text: "Texte arche",
+          size: "builder",
+          onClick: () => {
+            this.addComponent({ type: "MyTextTemplate1", props: {} });
           },
         },
         {
@@ -61,7 +79,6 @@ export default {
           size: "builder",
           onClick: () => {
             this.addComponent({ type: "MyImgFullWidth", props: {} });
-            // location.reload();
           },
         },
         {
@@ -69,7 +86,25 @@ export default {
           size: "builder",
           onClick: () => {
             this.addComponent({ type: "MyDoubleColumn", props: {} });
-            // location.reload();
+          },
+        },
+        {
+          text: "Information",
+          size: "builder",
+          onClick: () => {
+            this.addComponent({ type: "MyInformation", props: {} });
+          },
+        },
+        {
+          text: "Template 1",
+          size: "builder",
+          onClick: () => {
+            this.addComponent({ type: "MyMenu", props: {} });
+            this.addComponent({ type: "MyHeroTemplate1", props: {} });
+            this.addComponent({ type: "MyTextTemplate1", props: {} });
+            this.addComponent({ type: "MyItemsIcons", props: {} });
+            this.addComponent({ type: "MyDoubleColumn", props: {} });
+            this.addComponent({ type: "MyInformation", props: {} });
           },
         },
       ],

@@ -103,6 +103,7 @@
         <p>Meta Description</p>
         <textarea type="text" v-model="metaDescription"> </textarea>
       </div>
+      <h4>Sélectionner une template</h4>
 
       <p
         v-if="creationMessage"
@@ -205,7 +206,7 @@ export default {
         this.creationMessage = "Page créée avec succès!";
         this.creationSuccess = true;
         this.fetchPages();
-        this.goToPageBuilder(response.data._id); // Pass the newly created page ID
+        this.goToPageBuilder(response.data._id);
       } catch (error) {
         this.creationMessage =
           error.response?.data?.msg || "Erreur lors de la création de la page.";

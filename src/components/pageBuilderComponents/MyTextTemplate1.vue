@@ -1,27 +1,23 @@
 <template>
   <div class="container_builder">
-    <section
-      class="two_col"
-      :style="{
-        background: style.backgroundColor,
-        paddingTop: style.paddingTop + 'px',
-        paddingBottom: style.paddingBottom + 'px',
-      }"
-    >
+    <section class="text">
       <div
-        class="container_two_col"
-        :class="{ 'row-reverse': content.dislayImgRight }"
+        class="container_txt_style"
+        :style="{ backgroundColor: style.backgroundColor }"
       >
-        <div class="content_two_col">
+        <div
+          class="style-text"
+          :style="{ backgroundColor: style.waveColor }"
+        ></div>
+        <div class="container_txt">
           <h2
             :style="{
-              fontSize: style.titleFontSize + 'rem',
               color: style.titleColor,
+              fontSize: style.titleFontSize + 'rem',
             }"
           >
             {{ content.title }}
           </h2>
-
           <p :style="{ color: style.paragraphColor }">
             {{ content.paragraph }}
           </p>
@@ -38,9 +34,6 @@
             >{{ content.btnText }}</a
           >
         </div>
-        <div class="container_img">
-          <img :src="content.img" alt="" />
-        </div>
       </div>
       <MyButton
         @click="openUpdateModal"
@@ -56,36 +49,13 @@
         @deleteComp="deleteComponent"
       >
         <template #group>
-          <h4>Image et texte</h4>
-
+          <h4>Couleur de fond</h4>
           <div class="separator">
-            <p>Couleur de fond</p>
             <input type="color" v-model="style.backgroundColor" />
           </div>
-
           <div class="separator">
-            <p>Mettre l'image à droite</p>
-            <input type="checkbox" v-model="content.dislayImgRight" />
-          </div>
-          <div class="separator">
-            <p>Espacement haut</p>
-            <input
-              type="number"
-              v-model="style.paddingTop"
-              step="25"
-              min="25"
-              max="200"
-            />
-          </div>
-          <div class="separator">
-            <p>Espacement bas</p>
-            <input
-              type="number"
-              v-model="style.paddingBottom"
-              step="25"
-              min="25"
-              max="200"
-            />
+            <p>Couleur de fond à gauche</p>
+            <input type="color" v-model="style.waveColor" />
           </div>
           <h4>Titre Principal</h4>
           <div class="separator">
@@ -112,11 +82,6 @@
           <div class="separator">
             <p>Couleur du paragraphe</p>
             <input type="color" v-model="style.paragraphColor" />
-          </div>
-
-          <div class="separator">
-            <p>Image</p>
-            <input type="file" @change="onImageChange" accept="image/*" />
           </div>
           <h4>Bouton</h4>
           <div class="separator">
@@ -167,26 +132,21 @@ export default {
 
       content: {
         title: "Titre Principal",
-        subTitle: "Sous Titre",
+        paragraph:
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard",
         img: "/public/DefaultImg.jpg",
         link: "",
         btnText: "Call to action",
         showLink: true,
-        dislayImgRight: false,
-        paragraph:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard",
       },
       style: {
         titleColor: "#00000",
         backgroundColor: "#ffffff",
         titleFontSize: "2rem",
-        subTitleSize: "1.5rem",
-        subTitleColor: "#000",
+        paragraphColor: "#000",
+        waveColor: "#ddd",
         btnTextColor: "#fff",
         btnBackgroundColor: "#000",
-        paragraphColor: "#000",
-        paddingTop: "100px",
-        paddingBottom: "100px",
       },
     };
   },
@@ -268,51 +228,52 @@ export default {
   },
   watch: {
     id(newId) {
-      this.loadFromStore();
+      this.loadFromStore(); // Recharger les données si l'ID change
     },
   },
 };
 </script>
 
 <style scoped>
-.two_col {
-  padding: 100px 0;
-}
-.container_two_col {
+.text {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 25px;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 20px;
+  align-items: stretch;
+  height: 100%;
+
+  width: 100%;
 }
 
-.row-reverse {
-  flex-direction: row-reverse;
-}
-
-.content_two_col {
-  gap: 10px;
+.container_txt {
+  padding: 50px 20px;
+  max-width: 500px;
   text-align: center;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: start;
   flex-direction: column;
-  flex: 1;
+  gap: 15px;
   text-align: left;
+  z-index: 11;
 }
-.container_img {
-  height: 100%;
-  flex: 1;
-}
-
-.container_img img {
+.style-text {
   display: block;
-  max-width: 100%;
+  width: 40%;
+  background-color: var(--primary-color);
   height: 100%;
+  border-top-right-radius: 999px;
+  position: absolute;
+  top: 50%;
+  left: 20%;
+  transform: translate(-50%, -50%);
+}
 
-  object-fit: cover;
+.container_txt_style {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  background-color: var(--light);
 }
 .btn_edit {
   position: absolute;
@@ -338,13 +299,5 @@ input[type="color"] {
 input[type="checkbox"] {
   width: 10%;
   height: 30px;
-}
-@media (max-width: 1000px) {
-  .hero {
-    flex-direction: column;
-  }
-  .container_content {
-    text-align: center;
-  }
 }
 </style>

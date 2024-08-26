@@ -1,28 +1,32 @@
 <template>
   <div class="container_builder">
-    <section
-      class="two_col"
-      :style="{
-        background: style.backgroundColor,
-        paddingTop: style.paddingTop + 'px',
-        paddingBottom: style.paddingBottom + 'px',
-      }"
-    >
-      <div
-        class="container_two_col"
-        :class="{ 'row-reverse': content.dislayImgRight }"
-      >
-        <div class="content_two_col">
-          <h2
+    <section class="hero">
+      <div class="container_content">
+        <div class="position_content">
+          <h1
             :style="{
               fontSize: style.titleFontSize + 'rem',
               color: style.titleColor,
             }"
+            contenteditable="true"
+            @input="updateContent('title', $event)"
           >
             {{ content.title }}
+          </h1>
+          <h2
+            contenteditable="true"
+            @input="updateContent('subTitle', $event)"
+            :style="{
+              fontSize: style.subTitleSize + 'rem',
+              color: style.subTitleColor,
+            }"
+          >
+            {{ content.subTitle }}
           </h2>
-
-          <p :style="{ color: style.paragraphColor }">
+          <p
+            v-if="content.showParagraph"
+            :style="{ color: style.paragraphColor }"
+          >
             {{ content.paragraph }}
           </p>
           <a
@@ -38,9 +42,13 @@
             >{{ content.btnText }}</a
           >
         </div>
-        <div class="container_img">
-          <img :src="content.img" alt="" />
-        </div>
+      </div>
+      <div class="container_img">
+        <img :src="content.img" alt="" />
+        <span
+          class="circle_img"
+          :style="{ backgroundColor: style.circleColor }"
+        ></span>
       </div>
       <MyButton
         @click="openUpdateModal"
@@ -56,37 +64,6 @@
         @deleteComp="deleteComponent"
       >
         <template #group>
-          <h4>Image et texte</h4>
-
-          <div class="separator">
-            <p>Couleur de fond</p>
-            <input type="color" v-model="style.backgroundColor" />
-          </div>
-
-          <div class="separator">
-            <p>Mettre l'image à droite</p>
-            <input type="checkbox" v-model="content.dislayImgRight" />
-          </div>
-          <div class="separator">
-            <p>Espacement haut</p>
-            <input
-              type="number"
-              v-model="style.paddingTop"
-              step="25"
-              min="25"
-              max="200"
-            />
-          </div>
-          <div class="separator">
-            <p>Espacement bas</p>
-            <input
-              type="number"
-              v-model="style.paddingBottom"
-              step="25"
-              min="25"
-              max="200"
-            />
-          </div>
           <h4>Titre Principal</h4>
           <div class="separator">
             <input type="text" v-model="content.title" />
@@ -105,18 +82,48 @@
             <p>Couleur</p>
             <input type="color" v-model="style.titleColor" />
           </div>
-          <h4>Paragraphe</h4>
+          <h4>Sous Titre</h4>
           <div class="separator">
-            <textarea type="text" v-model="content.paragraph"> </textarea>
+            <input type="text" v-model="content.subTitle" />
           </div>
           <div class="separator">
-            <p>Couleur du paragraphe</p>
-            <input type="color" v-model="style.paragraphColor" />
+            <p>taille</p>
+            <input
+              type="number"
+              v-model="style.subTitleSize"
+              step="0.25"
+              min="1"
+              max="5"
+            />
+          </div>
+          <div class="separator">
+            <p>Couleur</p>
+            <input type="color" v-model="style.subTitleColor" />
+          </div>
+
+          <h4>Phrase d'accroche</h4>
+          <div class="separator">
+            <p>afficher la phrase d'accroche</p>
+            <input type="checkbox" v-model="content.showParagraph" />
+          </div>
+          <div class="separator">
+            <p>Votre phrase</p>
+            <input type="text" v-model="content.paragraph" />
           </div>
 
           <div class="separator">
-            <p>Image</p>
+            <p>Couleur de la phrase d'accroche</p>
+            <input type="color" v-model="style.paragraphColor" />
+          </div>
+
+          <h4>Votre image</h4>
+          <div class="separator">
+            <p>choisissez une image</p>
             <input type="file" @change="onImageChange" accept="image/*" />
+          </div>
+          <div class="separator">
+            <p>Couleur du cercle de l'image</p>
+            <input type="color" v-model="style.circleColor" />
           </div>
           <h4>Bouton</h4>
           <div class="separator">
@@ -149,6 +156,7 @@
 import { usePageStore } from "@/stores/componentsStore";
 import MyButton from "../MyButton.vue";
 import MyUpdateModal from "./MyUpdateModal.vue";
+import Compressor from "compressorjs";
 
 export default {
   props: {
@@ -172,9 +180,9 @@ export default {
         link: "",
         btnText: "Call to action",
         showLink: true,
-        dislayImgRight: false,
+        showParagraph: true,
         paragraph:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard",
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard",
       },
       style: {
         titleColor: "#00000",
@@ -185,8 +193,7 @@ export default {
         btnTextColor: "#fff",
         btnBackgroundColor: "#000",
         paragraphColor: "#000",
-        paddingTop: "100px",
-        paddingBottom: "100px",
+        circleColor: "#000",
       },
     };
   },
@@ -275,44 +282,61 @@ export default {
 </script>
 
 <style scoped>
-.two_col {
-  padding: 100px 0;
-}
-.container_two_col {
+.hero {
+  min-height: 50vh;
+  height: auto;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 25px;
-  max-width: 1400px;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 0 20px;
+}
+.container_content {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  width: 50%;
 }
 
-.row-reverse {
-  flex-direction: row-reverse;
-}
-
-.content_two_col {
-  gap: 10px;
-  text-align: center;
+.position_content {
   display: flex;
   justify-content: center;
   align-items: flex-start;
   flex-direction: column;
-  flex: 1;
-  text-align: left;
+  gap: 10px;
 }
 .container_img {
   height: 100%;
-  flex: 1;
+
+  width: 400px;
+  padding: 25px 10px;
+
+  position: relative;
 }
 
 .container_img img {
-  display: block;
-  max-width: 100%;
-  height: 100%;
+  display: inline-block;
 
+  min-height: 50vh;
   object-fit: cover;
+  border-radius: 999px 999px 0 0;
+  position: relative;
+}
+
+.circle_img {
+  display: block;
+  height: 100px;
+  width: 100px;
+  border-radius: 999px;
+
+  position: absolute;
+  top: 88%;
+  left: 5%;
+  transform: translate(-50%, -50%);
 }
 .btn_edit {
   position: absolute;
@@ -345,6 +369,18 @@ input[type="checkbox"] {
   }
   .container_content {
     text-align: center;
+  }
+  .container_img {
+    width: 300px;
+  }
+}
+
+@media (max-width: 650px) {
+  .circle_img {
+    width: 80px;
+    height: 80px;
+    top: 90%;
+    left: 10%;
   }
 }
 </style>

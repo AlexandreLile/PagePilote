@@ -1,13 +1,6 @@
 <template>
   <div class="container_builder">
-    <section
-      class="two_col"
-      :style="{
-        background: style.backgroundColor,
-        paddingTop: style.paddingTop + 'px',
-        paddingBottom: style.paddingBottom + 'px',
-      }"
-    >
+    <section class="two_col" :style="{ background: style.backgroundColor }">
       <div
         class="container_two_col"
         :class="{ 'row-reverse': content.dislayImgRight }"
@@ -21,25 +14,41 @@
           >
             {{ content.title }}
           </h2>
+          <div v-if="content.showMail" class="content_info">
+            <strong>Adresse mail : </strong>
+            <a
+              :style="{
+                color: style.mailColor,
+              }"
+              :href="content.mail"
+              target="_blank"
+              rel="noopener noreferrer"
+              >{{ content.mail }}</a
+            >
+          </div>
 
-          <p :style="{ color: style.paragraphColor }">
-            {{ content.paragraph }}
-          </p>
-          <a
-            :style="{
-              color: style.btnTextColor,
-              background: style.btnBackgroundColor,
-            }"
-            v-if="content.showLink"
-            class="link_builder"
-            :href="content.link"
-            target="_blank"
-            rel="noopener noreferrer"
-            >{{ content.btnText }}</a
-          >
+          <div v-if="content.showPhone" class="content_info">
+            <strong>Numéro de téléphone : </strong>
+            <a
+              :style="{
+                color: style.phoneColor,
+              }"
+              :href="content.phone"
+              target="_blank"
+              rel="noopener noreferrer"
+              >{{ content.phone }}</a
+            >
+          </div>
+
+          <div class="content_info">
+            <strong>Adresse postale : </strong>
+            <p :style="{ color: style.locationColor }">
+              {{ content.location }}
+            </p>
+          </div>
         </div>
-        <div class="container_img">
-          <img :src="content.img" alt="" />
+        <div class="container_iframe">
+          <iframe :src="content.iframe" frameborder="0"></iframe>
         </div>
       </div>
       <MyButton
@@ -56,40 +65,14 @@
         @deleteComp="deleteComponent"
       >
         <template #group>
-          <h4>Image et texte</h4>
-
+          <h4>Information</h4>
           <div class="separator">
-            <p>Couleur de fond</p>
-            <input type="color" v-model="style.backgroundColor" />
-          </div>
-
-          <div class="separator">
-            <p>Mettre l'image à droite</p>
-            <input type="checkbox" v-model="content.dislayImgRight" />
-          </div>
-          <div class="separator">
-            <p>Espacement haut</p>
-            <input
-              type="number"
-              v-model="style.paddingTop"
-              step="25"
-              min="25"
-              max="200"
-            />
-          </div>
-          <div class="separator">
-            <p>Espacement bas</p>
-            <input
-              type="number"
-              v-model="style.paddingBottom"
-              step="25"
-              min="25"
-              max="200"
-            />
-          </div>
-          <h4>Titre Principal</h4>
-          <div class="separator">
+            <h4>Titre Principal</h4>
             <input type="text" v-model="content.title" />
+          </div>
+          <div class="separator">
+            <p>Couleur</p>
+            <input type="color" v-model="style.titleColor" />
           </div>
           <div class="separator">
             <p>taille</p>
@@ -101,43 +84,54 @@
               max="5"
             />
           </div>
+
+          <h4>Adresse mail</h4>
+          <div class="separator">
+            <p>Afficher l'adresse mail</p>
+            <input type="checkbox" v-model="content.showMail" />
+          </div>
+          <div class="separator">
+            <p>Votre adresse mail</p>
+            <input type="text" v-model="content.mail" />
+          </div>
           <div class="separator">
             <p>Couleur</p>
-            <input type="color" v-model="style.titleColor" />
-          </div>
-          <h4>Paragraphe</h4>
-          <div class="separator">
-            <textarea type="text" v-model="content.paragraph"> </textarea>
-          </div>
-          <div class="separator">
-            <p>Couleur du paragraphe</p>
-            <input type="color" v-model="style.paragraphColor" />
+            <input type="color" v-model="style.mailColor" />
           </div>
 
+          <h4>Numéro de téléphone</h4>
           <div class="separator">
-            <p>Image</p>
-            <input type="file" @change="onImageChange" accept="image/*" />
-          </div>
-          <h4>Bouton</h4>
-          <div class="separator">
-            <p>Afficher le bouton</p>
-            <input type="checkbox" v-model="content.showLink" />
+            <p>Afficher votre numéro de téléphone</p>
+            <input type="checkbox" v-model="content.showPhone" />
           </div>
           <div class="separator">
-            <p>Texte du bouton</p>
-            <input type="text" v-model="content.btnText" />
+            <p>Votre numéro de téléphone</p>
+            <input type="text" v-model="content.phone" />
           </div>
           <div class="separator">
-            <p>Lien du bouton</p>
-            <input type="text" v-model="content.link" placeholder="https://" />
+            <p>Couleur</p>
+            <input type="color" v-model="style.phoneColor" />
+          </div>
+
+          <h4>Adresse postale</h4>
+
+          <div class="separator">
+            <p>Votre addresse postale</p>
+            <input type="text" v-model="content.location" />
           </div>
           <div class="separator">
-            <p>Couleur du bouton</p>
-            <input type="color" v-model="style.btnTextColor" />
+            <p>Couleur</p>
+            <input type="color" v-model="style.locationColor" />
           </div>
+          <h4>Google Maps</h4>
           <div class="separator">
-            <p>Couleur de fond du bouton</p>
-            <input type="color" v-model="style.btnBackgroundColor" />
+            <p>URL de l'iframe Google Maps</p>
+            <p class="help">
+              Une fois votre Iframe Google Maps récupéré, ne renseignez
+              uniquement la partie qui se trouve entre
+              <code>&lt;iframe src=" "&gt;&lt;/iframe&gt;</code>
+            </p>
+            <input type="text" v-model="content.iframe" />
           </div>
         </template>
       </MyUpdateModal>
@@ -171,10 +165,13 @@ export default {
         img: "/public/DefaultImg.jpg",
         link: "",
         btnText: "Call to action",
-        showLink: true,
-        dislayImgRight: false,
-        paragraph:
-          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard",
+        showMail: true,
+        mail: "contact@pagepilote.fr",
+        showPhone: true,
+        phone: "06 06 06 06 06",
+        location: "1 rue de Page pilote, 33000 Bordeaux",
+        iframe:
+          "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d202845.20095778865!2d-122.20590605050924!3d37.402689177766526!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fb68ad0cfc739%3A0x7eb356b66bd4b50e!2sSilicon%20Valley%2C%20Californie%2C%20%C3%89tats-Unis!5e0!3m2!1sfr!2sfr!4v1724678824924!5m2!1sfr!2sfr",
       },
       style: {
         titleColor: "#00000",
@@ -185,8 +182,9 @@ export default {
         btnTextColor: "#fff",
         btnBackgroundColor: "#000",
         paragraphColor: "#000",
-        paddingTop: "100px",
-        paddingBottom: "100px",
+        mailColor: "#000",
+        phoneColor: "#000",
+        locationColor: "#000",
       },
     };
   },
@@ -283,6 +281,7 @@ export default {
   justify-content: center;
   align-items: center;
   gap: 25px;
+
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 20px;
@@ -314,6 +313,19 @@ export default {
 
   object-fit: cover;
 }
+
+.container_iframe iframe {
+  width: 500px;
+  height: 400px;
+  max-width: 100%;
+}
+.content_info {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
 .btn_edit {
   position: absolute;
   top: 8%;
@@ -339,11 +351,17 @@ input[type="checkbox"] {
   width: 10%;
   height: 30px;
 }
-@media (max-width: 1000px) {
-  .hero {
+
+@media (max-width: 1100px) {
+  .container_two_col {
     flex-direction: column;
   }
-  .container_content {
+  .content_info {
+    justify-content: center;
+  }
+
+  .content_two_col {
+    align-items: center;
     text-align: center;
   }
 }

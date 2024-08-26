@@ -34,7 +34,7 @@
   <section class="double_col">
     <div class="container_double_col">
       <div class="content_double_col">
-        <h2><strong>Page Pilote </strong>pour vos projet de landing page</h2>
+        <h2><strong>Page Pilote </strong>pour vos projets de landing page</h2>
         <p>
           Créer des landing pages rapidement et facilement, sans nécessiter de
           compétences en développement ou en design. Que vous soyez une agence

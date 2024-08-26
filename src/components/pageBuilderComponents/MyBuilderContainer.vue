@@ -26,7 +26,11 @@ import MyText from "./MyText.vue";
 import MyDoubleColumn from "./MyDoubleColumn.vue";
 import MyImgFullWidth from "./MyImgFullWidth.vue";
 import MyMenuBuilder from "./MyMenuBuilder.vue";
+import MyHeroTemplate1 from "./MyHeroTemplate1.vue";
+import MyTextTemplate1 from "./MyTextTemplate1.vue";
 import Draggable from "vuedraggable";
+import MyItemsIcons from "./MyItemsIcons.vue";
+import MyInformation from "./MyInformation.vue";
 import axios from "axios";
 import { useRoute } from "vue-router";
 
@@ -44,6 +48,10 @@ export default {
     MyDoubleColumn,
     MyImgFullWidth,
     MyMenuBuilder,
+    MyHeroTemplate1,
+    MyTextTemplate1,
+    MyItemsIcons,
+    MyInformation,
   },
   computed: {
     pageStore() {
