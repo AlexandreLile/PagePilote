@@ -1,7 +1,14 @@
 <template>
   <div class="container_builder">
     <section class="container-grid">
-      <div class="grid" :style="{ background: style.backgroundColor }">
+      <div
+        class="grid"
+        :style="{
+          background: style.backgroundColor,
+          paddingTop: style.paddingTop + 'px',
+          paddingBottom: style.paddingBottom + 'px',
+        }"
+      >
         <article
           class="grid-item"
           :style="{ background: style.backgroundColorCard }"
@@ -71,6 +78,26 @@
           <div class="separator">
             <p>Couleur de fond</p>
             <input type="color" v-model="style.backgroundColor" />
+          </div>
+          <div class="separator">
+            <p>Espacement haut</p>
+            <input
+              type="number"
+              v-model="style.paddingTop"
+              step="25"
+              min="25"
+              max="200"
+            />
+          </div>
+          <div class="separator">
+            <p>Espacement bas</p>
+            <input
+              type="number"
+              v-model="style.paddingBottom"
+              step="25"
+              min="25"
+              max="200"
+            />
           </div>
           <div class="separator">
             <p>Couleur de fond des cartes</p>
@@ -179,6 +206,8 @@ export default {
         carteBackground: "#fff",
         backgroundColorCard: "#fff",
         paragraphColor: "#000",
+        paddingTop: "100px",
+        paddingBottom: "100px",
       },
     };
   },

@@ -8,6 +8,7 @@
         <div class="links">
           <a
             v-if="content.showPhone"
+            :style="{ color: style.phoneColor }"
             class="phone"
             :href="'tel:' + content.phone"
             >{{ content.phoneText }}</a
@@ -15,6 +16,7 @@
 
           <a
             v-if="content.showMail"
+            :style="{ color: style.mailColor }"
             class="mail"
             :href="'mail:' + content.mail"
             >{{ content.mailText }}</a
@@ -117,6 +119,10 @@
             <input type="checkbox" v-model="content.showPhone" />
           </div>
           <div class="separator">
+            <p>Couleur du téléphone</p>
+            <input type="color" v-model="style.phoneColor" />
+          </div>
+          <div class="separator">
             <p>Votre numéro</p>
             <input type="tel" v-model="content.phone" />
           </div>
@@ -129,6 +135,10 @@
           <div class="separator">
             <p>Afficher l'adresse mail</p>
             <input type="checkbox" v-model="content.showMail" />
+          </div>
+          <div class="separator">
+            <p>Couleur du mail</p>
+            <input type="color" v-model="style.mailColor" />
           </div>
           <div class="separator">
             <p>Votre addresse mail</p>
@@ -178,6 +188,12 @@
           <div class="separator">
             <p>Lien de votre compte Tiktok</p>
             <input type="text" v-model="content.tiktok" />
+          </div>
+
+          <h4>Responsive</h4>
+          <div class="separator">
+            <p>Couleur du menu burger</p>
+            <input type="color" v-model="style.menuBurgerColor" />
           </div>
         </template>
       </MyUpdateModal>
@@ -229,6 +245,9 @@ export default {
         facebookColor: "#121212",
         instagramColor: "#121212",
         tiktokColor: "#121212",
+        phoneColor: "#000",
+        mailColor: "#000",
+        menuBurgerColor: "#121212",
       },
     };
   },
@@ -383,13 +402,5 @@ input[type="color"] {
 input[type="checkbox"] {
   width: 10%;
   height: 30px;
-}
-@media (max-width: 1000px) {
-  .hero {
-    flex-direction: column;
-  }
-  .container_content {
-    text-align: center;
-  }
 }
 </style>

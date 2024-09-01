@@ -55,7 +55,6 @@ export default {
 .update_modal {
   background-color: white;
   padding: 0 20px 20px 20px;
-  z-index: 1000;
   border-radius: 5px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   height: 50vh;

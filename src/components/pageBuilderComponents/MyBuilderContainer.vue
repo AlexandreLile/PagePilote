@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" ref="componentsContainer">
     <draggable
       v-model="draggableComponentsList"
       @end="handleListChange"
@@ -31,6 +31,7 @@ import MyTextTemplate1 from "./MyTextTemplate1.vue";
 import Draggable from "vuedraggable";
 import MyItemsIcons from "./MyItemsIcons.vue";
 import MyInformation from "./MyInformation.vue";
+import MyFooterBuilder from "./MyFooterBuilder.vue";
 import axios from "axios";
 import { useRoute } from "vue-router";
 
@@ -38,6 +39,9 @@ export default {
   data() {
     return {
       isDraggable: true,
+      previousComponentCount: 0,
+      hasNewItems: false,
+      isInitialLoad: true,
     };
   },
   components: {
@@ -52,6 +56,7 @@ export default {
     MyTextTemplate1,
     MyItemsIcons,
     MyInformation,
+    MyFooterBuilder,
   },
   computed: {
     pageStore() {
@@ -63,10 +68,17 @@ export default {
       },
       set(value) {
         this.pageStore.updateComponentsOrder(value);
+        console.log(value);
       },
     },
   },
   methods: {
+    scrollToBottom() {
+      this.$nextTick(() => {
+        const container = this.$refs.componentsContainer;
+        container.scrollTop = container.scrollHeight;
+      });
+    },
     handleListChange() {
       this.pageStore.saveComponentsToDatabase();
     },
@@ -76,6 +88,8 @@ export default {
     async loadPageData(pageId) {
       try {
         await this.pageStore.loadPageComponents(pageId);
+        this.previousComponentCount = this.draggableComponentsList.length;
+        this.isInitialLoad = false;
       } catch (error) {
         console.error(
           "Erreur lors du chargement des données de la page:",
@@ -93,6 +107,20 @@ export default {
     } else {
       console.error("Page ID is missing from route parameters.");
     }
+  },
+  watch: {
+    draggableComponentsList: {
+      handler(newList) {
+        if (
+          !this.isInitialLoad &&
+          newList.length > this.previousComponentCount
+        ) {
+          this.scrollToBottom();
+        }
+        this.previousComponentCount = newList.length;
+      },
+      deep: true,
+    },
   },
 };
 </script>

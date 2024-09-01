@@ -1,44 +1,36 @@
 <template>
   <div class="container_builder">
-    <section class="hero">
-      <div class="container_content">
-        <div class="position_content">
-          <h1
+    <section
+      class="footer"
+      :style="{ backgroundColor: style.topBackgroundColor }"
+    >
+      <div class="container_footer">
+        <div class="logo_title_footer">
+          <img
+            :style="{ width: style.logoSize + 'px' }"
+            :src="content.logo"
+            alt=""
+          />
+          <h2
             :style="{
-              fontSize: style.titleFontSize + 'rem',
               color: style.titleColor,
+              fontSize: style.titleFontSize + 'rem',
             }"
-            contenteditable="true"
-            @input="updateContent('title', $event)"
           >
             {{ content.title }}
-          </h1>
-          <h2
-            contenteditable="true"
-            @input="updateContent('subTitle', $event)"
-            :style="{
-              fontSize: style.subTitleSize + 'rem',
-              color: style.subTitleColor,
-            }"
-          >
-            {{ content.subTitle }}
           </h2>
-          <a
-            :style="{
-              color: style.btnTextColor,
-              background: style.btnBackgroundColor,
-            }"
-            v-if="content.showLink"
-            class="link_builder"
-            :href="content.link"
-            target="_blank"
-            rel="noopener noreferrer"
-            >{{ content.btnText }}</a
-          >
         </div>
-      </div>
-      <div class="container_img">
-        <img :src="content.img" alt="" />
+        <div
+          class="credits_footer"
+          :style="{ backgroundColor: style.bottomBackgroundColor }"
+        >
+          <p :style="{ color: style.companyColor }">
+            &copy; 2024 | {{ content.company }}
+          </p>
+          <a :href="content.mail" :style="{ color: style.mailColor }">{{
+            content.mail
+          }}</a>
+        </div>
       </div>
       <MyButton
         @click="openUpdateModal"
@@ -54,6 +46,29 @@
         @deleteComp="deleteComponent"
       >
         <template #group>
+          <h4>Bas de page</h4>
+          <div class="separator">
+            <p>Couleur de fond de la partie haute</p>
+            <input type="color" v-model="style.topBackgroundColor" />
+          </div>
+          <div class="separator">
+            <p>Couleur de fond de la partie basse</p>
+            <input type="color" v-model="style.bottomBackgroundColor" />
+          </div>
+          <h4>Votre logo</h4>
+          <div class="separator">
+            <input type="file" @change="onImageChange" accept="image/*" />
+          </div>
+          <div class="separator">
+            <p>taille du logo</p>
+            <input
+              type="number"
+              v-model="style.logoSize"
+              step="10"
+              min="20"
+              max="200"
+            />
+          </div>
           <h4>Titre Principal</h4>
           <div class="separator">
             <input type="text" v-model="content.title" />
@@ -72,49 +87,21 @@
             <p>Couleur</p>
             <input type="color" v-model="style.titleColor" />
           </div>
-          <h4>Sous Titre</h4>
+          <h4>Société</h4>
           <div class="separator">
-            <input type="text" v-model="content.subTitle" />
+            <input type="text" v-model="content.company" />
           </div>
           <div class="separator">
-            <p>taille</p>
-            <input
-              type="number"
-              v-model="style.subTitleSize"
-              step="0.25"
-              min="1"
-              max="5"
-            />
+            <p>Couleur de la société</p>
+            <input type="color" v-model="style.companyColor" />
+          </div>
+          <h4>Adresse mail</h4>
+          <div class="separator">
+            <input type="text" v-model="content.mail" />
           </div>
           <div class="separator">
-            <p>Couleur</p>
-            <input type="color" v-model="style.subTitleColor" />
-          </div>
-
-          <div class="separator">
-            <p>Image</p>
-            <input type="file" @change="onImageChange" accept="image/*" />
-          </div>
-          <h4>Bouton</h4>
-          <div class="separator">
-            <p>Afficher le bouton</p>
-            <input type="checkbox" v-model="content.showLink" />
-          </div>
-          <div class="separator">
-            <p>Texte du bouton</p>
-            <input type="text" v-model="content.btnText" />
-          </div>
-          <div class="separator">
-            <p>Lien du bouton</p>
-            <input type="text" v-model="content.link" placeholder="https://" />
-          </div>
-          <div class="separator">
-            <p>Couleur du bouton</p>
-            <input type="color" v-model="style.btnTextColor" />
-          </div>
-          <div class="separator">
-            <p>Couleur de fond du bouton</p>
-            <input type="color" v-model="style.btnBackgroundColor" />
+            <p>Couleur du mail</p>
+            <input type="color" v-model="style.mailColor" />
           </div>
         </template>
       </MyUpdateModal>
@@ -126,7 +113,6 @@
 import { usePageStore } from "@/stores/componentsStore";
 import MyButton from "../MyButton.vue";
 import MyUpdateModal from "./MyUpdateModal.vue";
-import Compressor from "compressorjs";
 
 export default {
   props: {
@@ -145,20 +131,19 @@ export default {
 
       content: {
         title: "Titre Principal",
-        subTitle: "Sous Titre",
-        img: "/public/DefaultImg.jpg",
-        link: "",
-        btnText: "Call to action",
-        showLink: true,
+
+        logo: "/public/logo.svg",
+        company: "Nom de la société",
+        mail: "adressemail@mail.com",
       },
       style: {
         titleColor: "#00000",
-        backgroundColor: "#ffffff",
         titleFontSize: "2rem",
-        subTitleSize: "1.5rem",
-        subTitleColor: "#000",
-        btnTextColor: "#fff",
-        btnBackgroundColor: "#000",
+        topBackgroundColor: "#fff",
+        bottomBackgroundColor: "#CCC",
+        mailColor: "#000",
+        logoSize: "50px",
+        companyColor: "#000",
       },
     };
   },
@@ -180,7 +165,6 @@ export default {
       this.style[propertyName] = value;
       this.updateStoreContent();
     },
-
     updateStoreContent() {
       const pageStore = usePageStore();
       pageStore.updateComponent({
@@ -191,13 +175,6 @@ export default {
         },
       });
     },
-
-    applyUpdates() {
-      this.updateStoreContent();
-      this.isUpdateModalOpen = false;
-      this.$emit("toggle-draggable", true);
-    },
-
     loadFromStore() {
       const pageStore = usePageStore();
       const component = pageStore.components.find((c) => c.id === this.id);
@@ -211,7 +188,11 @@ export default {
       this.isUpdateModalOpen = true;
       this.$emit("toggle-draggable", false);
     },
-
+    applyUpdates() {
+      this.updateStoreContent();
+      this.isUpdateModalOpen = false;
+      this.$emit("toggle-draggable", true);
+    },
     closeUpdateModal() {
       this.isUpdateModalOpen = false;
       this.$emit("toggle-draggable", true);
@@ -231,7 +212,7 @@ export default {
         const reader = new FileReader();
 
         reader.onload = (e) => {
-          this.content.img = e.target.result;
+          this.content.logo = e.target.result;
           this.updateStoreContent();
         };
 
@@ -244,54 +225,54 @@ export default {
   },
   watch: {
     id(newId) {
-      this.loadFromStore();
+      this.loadFromStore(); // Recharger les données si l'ID change
     },
   },
 };
 </script>
 
 <style scoped>
-.hero {
-  min-height: 50vh;
-  height: auto;
-  width: 100%;
+.container_footer {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-.container_content {
-  padding: 20px;
-  display: flex;
-  justify-content: center;
   flex-direction: column;
-  align-items: center;
-  height: 100%;
-  flex: 1;
   width: 100%;
 }
 
-.position_content {
+.logo_title_footer {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   flex-direction: column;
-  gap: 10px;
-}
-.container_img {
-  height: 100%;
-  flex: 1;
+  gap: 20px;
+
+  width: 100%;
+  padding: 20px 15px;
 }
 
-.container_img img {
-  display: block;
-  max-width: 100%;
-  height: 100%;
-  min-height: 50vh;
-  object-fit: cover;
+.logo_title_footer img {
+  width: 50px;
 }
+
+.credits_footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+
+  width: 100%;
+}
+
+.credits_footer_home a {
+  padding: 0;
+}
+
 .btn_edit {
   position: absolute;
-  top: 8%;
+  top: 12%;
   left: 50%;
   transform: translate(-50%, -50%);
   display: none;
@@ -313,14 +294,5 @@ input[type="color"] {
 input[type="checkbox"] {
   width: 10%;
   height: 30px;
-}
-
-@media (max-width: 1000px) {
-  .hero {
-    flex-direction: column;
-  }
-  .container_content {
-    text-align: center;
-  }
 }
 </style>

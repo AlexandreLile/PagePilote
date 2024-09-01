@@ -47,6 +47,7 @@ import MyMenu from "@/components/MyMenu.vue";
 import router from "@/router";
 import { RouterLink, RouterView, useRoute } from "vue-router";
 import MyFooter from "@/components/MyFooter.vue";
+import { loginUser } from "@/api/authApi";
 export default {
   data() {
     return {
@@ -59,30 +60,7 @@ export default {
   methods: {
     async loginUser() {
       try {
-        const response = await fetch("http://localhost:3000/auth/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: this.email,
-            password: this.password,
-          }),
-        });
-
-        if (!response.ok) {
-          let errorData = {};
-          try {
-            errorData = await response.json();
-          } catch (jsonError) {
-            console.error("Erreur lors de la lecture du JSON:", jsonError);
-          }
-
-          this.errorMessage = errorData.msg || "Erreur lors de la connexion";
-          throw new Error(this.errorMessage);
-        }
-
-        const data = await response.json();
+        const data = await loginUser(this.email, this.password);
         this.successMessage = "Connexion réussie ! Redirection en cours...";
         this.email = "";
         this.password = "";
@@ -91,11 +69,11 @@ export default {
 
         this.$router.push("/dashboard");
       } catch (error) {
-        console.error(
-          "Erreur lors de la tentative de connexion:",
-          error.message
-        );
-        this.errorMessage = error.message || "Une erreur est survenue";
+        if (error.response && error.response.data && error.response.data.msg) {
+          this.errorMessage = error.response.data.msg;
+        } else {
+          this.errorMessage = error.message || "Une erreur est survenue";
+        }
       }
     },
 

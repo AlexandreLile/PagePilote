@@ -70,6 +70,7 @@ export default {
   border: 0;
   cursor: pointer;
   height: 80px;
+  position: relative;
 }
 
 .btn-form {

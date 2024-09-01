@@ -31,6 +31,7 @@
     <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
     <p v-if="successMessage" class="success">{{ successMessage }}</p>
   </section>
+
   <section class="double_col">
     <div class="container_double_col">
       <div class="content_double_col">
@@ -56,6 +57,7 @@ import MyButton from "@/components/MyButton.vue";
 import MyMenu from "@/components/MyMenu.vue";
 import MyFooter from "@/components/MyFooter.vue";
 import { RouterLink, RouterView, useRoute } from "vue-router";
+import { registerUser } from "@/api/authApi";
 
 export default {
   data() {
@@ -76,34 +78,18 @@ export default {
       }
 
       try {
-        const response = await fetch("http://localhost:3000/auth/register", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: this.username,
-            email: this.email,
-            password: this.password,
-          }),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          this.errorMessage = errorData.msg || "Erreur lors de l'inscription";
-          throw new Error(this.errorMessage);
-        }
-
-        const data = await response.json();
+        const data = await registerUser(
+          this.username,
+          this.email,
+          this.password
+        );
         this.successMessage =
-          "Inscription réussie ! Vous pouvez maintenant vous connecter.";
+          "Inscription réussie ! Veuillez confirmer votre adresse mail.";
         this.username = "";
         this.email = "";
         this.password = "";
-        localStorage.setItem("token", data.token);
-        this.$router.push("/dashboard");
       } catch (error) {
-        console.error("Erreur:", error);
+        this.errorMessage = error.message || "Erreur lors de l'inscription";
       }
     },
 

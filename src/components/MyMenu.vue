@@ -1,7 +1,9 @@
 <template>
   <header>
     <div class="logo">
-      <img src="/public/Logo.svg" alt="Logo de Page Pilote" />
+      <a href="http://localhost:3000/">
+        <img src="/public/Logo.svg" alt="Logo de Page Pilote" />
+      </a>
     </div>
     <nav>
       <RouterLink v-if="isAuthenticated" class="menu_link" to="/dashboard">
@@ -140,5 +142,13 @@ nav {
 
 .menu_link svg {
   width: 20px;
+}
+@media (max-width: 400px) {
+  header {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+  }
 }
 </style>

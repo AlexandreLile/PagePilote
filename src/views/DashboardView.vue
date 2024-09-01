@@ -43,7 +43,7 @@
                   </svg>
                 </MyButton>
                 <MyButton
-                  @click="goToPageBuilder(page._id)"
+                  @click="handleGoToPageBuilder(page._id)"
                   size="md"
                   text="Éditer"
                 >
@@ -79,55 +79,67 @@
         </p>
       </div>
     </div>
+    <MySecurityModal
+      v-if="isSecurityModal"
+      :text="`Êtes-vous sûr de vouloir supprimer ${this.title} ?`"
+      @deleteElement="deleteComponent"
+      @close="isSecurityModal = false"
+    >
+    </MySecurityModal>
+    <MyUpdateModal
+      v-if="isUpdateModalOpen"
+      @click.self="closeUpdateModal"
+      @close="closeUpdateModal"
+      @apply="applyUpdates"
+      @deleteComp="openSecurityModal"
+    >
+      <template #group>
+        <h4>Titre de votre landing page</h4>
+        <div class="separator">
+          <input type="text" v-model="title" />
+        </div>
+        <h4>Balise méta (SEO)</h4>
+        <div class="separator">
+          <p>Meta Title</p>
+          <input type="text" v-model="metaTitle" />
+        </div>
+        <div class="separator">
+          <p>Meta Description</p>
+          <textarea v-model="metaDescription"></textarea>
+        </div>
+
+        <!-- <p
+          v-if="creationMessage"
+          :style="{ color: creationSuccess ? 'green' : 'red' }"
+        >
+          {{ creationMessage }}
+        </p> -->
+      </template>
+    </MyUpdateModal>
+    <MyFooter></MyFooter>
   </div>
-
-  <MyUpdateModal
-    v-if="isUpdateModalOpen"
-    @click.self="closeUpdateModal"
-    @close="closeUpdateModal"
-    @apply="applyUpdates"
-    @deleteComp="deleteComponent"
-  >
-    <template #group>
-      <h4>Titre de votre landing page</h4>
-      <div class="separator">
-        <input type="text" v-model="title" />
-      </div>
-      <h4>Balise méta (SEO)</h4>
-      <div class="separator">
-        <p>Meta Title</p>
-        <input type="text" v-model="metaTitle" />
-      </div>
-
-      <div class="separator">
-        <p>Meta Description</p>
-        <textarea type="text" v-model="metaDescription"> </textarea>
-      </div>
-      <h4>Sélectionner une template</h4>
-
-      <p
-        v-if="creationMessage"
-        :style="{ color: creationSuccess ? 'green' : 'red' }"
-      >
-        {{ creationMessage }}
-      </p>
-    </template>
-  </MyUpdateModal>
-  <MyFooter></MyFooter>
 </template>
+
 <script>
 import MyButton from "@/components/MyButton.vue";
+import MySecurityModal from "@/components/MySecurityModal.vue";
 import MyMenu from "@/components/MyMenu.vue";
 import MyUpdateModal from "@/components/pageBuilderComponents/MyUpdateModal.vue";
-import axios from "axios";
-import { useRouter } from "vue-router";
-import { usePageStore } from "@/stores/componentsStore";
 import MyFooter from "@/components/MyFooter.vue";
+import { RouterLink, RouterView, useRoute } from "vue-router";
+import {
+  createPage,
+  updatePage,
+  deletePage,
+  fetchPages,
+  goToPageBuilder,
+} from "@/api/landingPageApi";
 
 export default {
   data() {
     return {
       isUpdateModalOpen: false,
+      isSecurityModal: false,
       isEditing: false,
       currentPageId: null,
       title: "",
@@ -139,14 +151,8 @@ export default {
       fetchErrorMessage: "",
     };
   },
-  props: {
-    pageId: {
-      type: String,
-      required: true,
-    },
-  },
   async created() {
-    this.fetchPages();
+    await this.handleFetchPages();
   },
   methods: {
     openUpdateModal(page = null) {
@@ -164,168 +170,106 @@ export default {
       }
       this.isUpdateModalOpen = true;
     },
+    openSecurityModal() {
+      this.isSecurityModal = true;
+    },
+
     async applyUpdates() {
       if (this.isEditing) {
-        await this.updatePage();
+        await this.handleUpdatePage();
       } else {
-        await this.createPage();
+        await this.handleCreatePage();
       }
       this.closeUpdateModal();
     },
     closeUpdateModal() {
       this.isUpdateModalOpen = false;
     },
-
-    deleteComponent() {
+    async deleteComponent() {
       if (this.currentPageId) {
-        this.deletePage(this.currentPageId);
+        await this.handleDeletePage(this.currentPageId);
+        this.isSecurityModal = false;
+      }
+    },
+    async handleCreatePage() {
+      const { success, message, pageId } = await createPage(
+        this.title,
+        this.metaTitle,
+        this.metaDescription
+      );
+      console.log("Création de la page, ID de la page:", pageId); // Log pour vérifier le pageId
+      this.creationMessage = message;
+      this.creationSuccess = success;
+
+      if (success) {
+        await this.handleFetchPages();
+
+        if (pageId) {
+          return this.handleGoToPageBuilder(pageId);
+        } else {
+          console.error("Aucun pageId renvoyé après la création de la page.");
+        }
+      }
+    },
+
+    async handleUpdatePage() {
+      const { success, message } = await updatePage(
+        this.currentPageId,
+        this.title,
+        this.metaTitle,
+        this.metaDescription
+      );
+      this.creationMessage = message;
+      this.creationSuccess = success;
+
+      if (success) {
+        await this.handleFetchPages();
         this.closeUpdateModal();
       }
     },
-    async createPage() {
-      this.creationMessage = "";
-      this.creationSuccess = false;
+    async handleDeletePage(pageId) {
+      const { success, message } = await deletePage(pageId);
+      this.creationMessage = message;
+      this.creationSuccess = success;
 
-      try {
-        const token = localStorage.getItem("token");
-        if (!token)
-          throw new Error(
-            "Token d'authentification non trouvé. Veuillez vous connecter."
-          );
-
-        const response = await axios.post(
-          "http://localhost:3000/landingPages",
-          {
-            title: this.title,
-            metaTitle: this.metaTitle,
-            metaDescription: this.metaDescription,
-          },
-          { headers: { "x-auth-token": token } }
-        );
-
-        this.creationMessage = "Page créée avec succès!";
-        this.creationSuccess = true;
-        this.fetchPages();
-        this.goToPageBuilder(response.data._id);
-      } catch (error) {
-        this.creationMessage =
-          error.response?.data?.msg || "Erreur lors de la création de la page.";
-        this.creationSuccess = false;
+      if (success) {
+        await this.handleFetchPages();
+        this.closeUpdateModal();
       }
     },
-    async updatePage() {
-      this.creationMessage = "";
-      this.creationSuccess = false;
-
+    async handleFetchPages() {
       try {
-        const token = localStorage.getItem("token");
-        if (!token)
-          throw new Error(
-            "Token d'authentification non trouvé. Veuillez vous connecter."
-          );
+        const response = await fetchPages();
+        console.log("Réponse de fetchPages:", response);
 
-        await axios.put(
-          `http://localhost:3000/landingPages/${this.currentPageId}`,
-          {
-            title: this.title,
-            metaTitle: this.metaTitle,
-            metaDescription: this.metaDescription,
-          },
-          { headers: { "x-auth-token": token } }
-        );
+        const { success, pages, message } = response;
+        console.log("Pages récupérées :", pages);
 
-        this.creationMessage = "Page modifiée avec succès!";
-        this.creationSuccess = true;
-        this.fetchPages();
-      } catch (error) {
-        this.creationMessage =
-          error.response?.data?.msg ||
-          "Erreur lors de la modification de la page.";
-        this.creationSuccess = false;
-      }
-    },
-    async deletePage(pageId) {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token)
-          throw new Error(
-            "Token d'authentification non trouvé. Veuillez vous connecter."
-          );
-
-        await axios.delete(`http://localhost:3000/landingPages/${pageId}`, {
-          headers: { "x-auth-token": token },
-        });
-
-        this.creationMessage = "Page supprimée avec succès!";
-        this.creationSuccess = true;
-        this.fetchPages();
-      } catch (error) {
-        this.creationMessage =
-          error.response?.data?.msg ||
-          "Erreur lors de la suppression de la page.";
-        this.creationSuccess = false;
-      }
-    },
-    async fetchPages() {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token)
-          throw new Error(
-            "Token d'authentification non trouvé. Veuillez vous connecter."
-          );
-
-        const response = await axios.get("http://localhost:3000/landingPages", {
-          headers: { "x-auth-token": token },
-        });
-
-        this.pages = response.data;
-      } catch (error) {
-        this.fetchErrorMessage =
-          error.response?.data?.msg ||
-          "Erreur lors de la récupération des pages.";
-      }
-    },
-    async goToPageBuilder(pageId) {
-      console.log("goToPageBuilder called with pageId:", pageId);
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          throw new Error(
-            "Token d'authentification non trouvé. Veuillez vous connecter."
-          );
+        if (success) {
+          this.pages = pages;
+        } else {
+          this.fetchErrorMessage = message;
         }
+      } catch (error) {
+        this.fetchErrorMessage = "Erreur lors de la récupération des pages.";
+        console.error("Erreur dans handleFetchPages :", error.message);
+      }
+    },
 
-        // Vérifier si la page a déjà un builder associé
-        try {
-          const response = await axios.get(
-            `http://localhost:3000/pageBuilder/${pageId}`,
-            { headers: { "x-auth-token": token } }
-          );
-          // Si le constructeur de page existe, rediriger vers le page builder
-          if (response.status === 200) {
-            this.$router.push(`/page-builder/${pageId}`);
-            return; // Terminer la fonction ici, car le builder existe déjà
-          }
-        } catch (error) {
-          // Si une erreur 404 est rencontrée, alors le constructeur de page n'existe pas
-          if (error.response && error.response.status === 404) {
-            // Créer un nouveau builder
-            await axios.post(
-              `http://localhost:3000/pageBuilder/${pageId}`,
-              { components: [] }, // Initialiser avec des composants vides ou par défaut
-              { headers: { "x-auth-token": token } }
-            );
-            this.$router.push(`/page-builder/${pageId}`);
-            return; // Terminer la fonction ici après la création
-          } else {
-            throw error; // Rejeter l'erreur si ce n'est pas une erreur 404
-          }
+    async handleGoToPageBuilder(pageId) {
+      try {
+        if (pageId) {
+          await goToPageBuilder(pageId, this.$router);
+        } else {
+          console.warn("Page ID is not defined.");
         }
       } catch (error) {
         console.error(
           "Erreur lors de la navigation vers le page builder :",
           error
         );
+        this.fetchErrorMessage =
+          "Erreur lors de la navigation vers le page builder.";
       }
     },
   },
@@ -334,6 +278,7 @@ export default {
     MyButton,
     MyUpdateModal,
     MyFooter,
+    MySecurityModal,
   },
 };
 </script>
@@ -344,6 +289,7 @@ export default {
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 50px;
   padding: 50px 25px;
+  min-height: 600px;
 }
 
 .grid li {
@@ -353,6 +299,7 @@ export default {
   align-items: center;
   flex-direction: column;
   gap: 25px;
+  min-height: 400px;
 }
 
 .grid_container {
@@ -395,5 +342,11 @@ export default {
   justify-content: center;
   align-items: center;
   gap: 15px;
+}
+
+@media (max-width: 500px) {
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
 }
 </style>

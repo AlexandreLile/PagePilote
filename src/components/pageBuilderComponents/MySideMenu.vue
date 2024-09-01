@@ -4,12 +4,20 @@
       <input type="search" v-model="searchButton" placeholder="recherche" />
       <div class="grid">
         <MyButton
+          class="button-wrapper"
           v-for="(button, index) in sortedButtons"
           :key="index"
           :text="button.text"
           :size="button.size"
           @click="button.onClick"
-        ></MyButton>
+          @mouseover="hoveredButton = index"
+          @mouseleave="hoveredButton = null"
+          ><img
+            v-if="(hoveredButton = index)"
+            :src="getImageSrc(button.text)"
+            alt="Image hover"
+            class="hover-image"
+        /></MyButton>
       </div>
     </div>
   </aside>
@@ -24,6 +32,7 @@ export default {
     return {
       showComponents: true,
       searchButton: "",
+      hoveredButton: null,
       buttons: [
         {
           text: "Menu",
@@ -33,28 +42,28 @@ export default {
           },
         },
         {
-          text: "Hero",
+          text: "Bannière",
           size: "builder",
           onClick: () => {
             this.addComponent({ type: "MyHero", props: {} });
           },
         },
         {
-          text: "Hero arche",
+          text: "Bannière arche",
           size: "builder",
           onClick: () => {
             this.addComponent({ type: "MyHeroTemplate1", props: {} });
           },
         },
         {
-          text: "Items",
+          text: "Itèmes",
           size: "builder",
           onClick: () => {
             this.addComponent({ type: "MyItems", props: {} });
           },
         },
         {
-          text: "Items icones",
+          text: "Itèmes avec icones",
           size: "builder",
           onClick: () => {
             this.addComponent({ type: "MyItemsIcons", props: {} });
@@ -96,7 +105,14 @@ export default {
           },
         },
         {
-          text: "Template 1",
+          text: "Bas de page",
+          size: "builder",
+          onClick: () => {
+            this.addComponent({ type: "MyFooterBuilder", props: {} });
+          },
+        },
+        {
+          text: "Template",
           size: "builder",
           onClick: () => {
             this.addComponent({ type: "MyMenu", props: {} });
@@ -111,6 +127,34 @@ export default {
     };
   },
   methods: {
+    getImageSrc(buttonText) {
+      switch (buttonText) {
+        case "Image et texte":
+          return "/public/banniere.png";
+        case "Bannière":
+          return "/public/hero.png";
+        case "Itèmes":
+          return "/public/items.png";
+        case "Bannière arche":
+          return "/public/arche.png";
+        case "Information":
+          return "/public/information.png";
+        case "Bas de page":
+          return "/public/footer.png";
+        case "Image pleine largeur":
+          return "/public/imgfullwidth.png";
+        case "Texte arche":
+          return "/public/textarche.png";
+        case "Texte":
+          return "/public/texte.png";
+        case "Itèmes avec icones":
+          return "/public/itemsicons.png";
+
+        case "Template":
+          return "/public/template.png";
+      }
+    },
+
     addComponent(component) {
       const pageStore = usePageStore();
       pageStore.addComponent(component);
@@ -142,6 +186,21 @@ export default {
 </script>
 
 <style scoped>
+.hover-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+.button-wrapper:hover img {
+  opacity: 1;
+}
 .container {
   max-height: 80vh;
   overflow-y: auto;

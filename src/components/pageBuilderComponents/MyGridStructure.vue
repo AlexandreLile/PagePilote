@@ -5,6 +5,9 @@
       <MyBuilderContainer class="b"></MyBuilderContainer>
     </div>
   </div>
+  <div class="container-mobile">
+    <h1>Page Pilote n'est pas encore disponible sur mobile</h1>
+  </div>
 </template>
 
 <script>
@@ -48,5 +51,28 @@ export default {
 
 .b {
   grid-area: B;
+}
+
+.container-mobile {
+  display: none;
+}
+@media (max-width: 670px) {
+  .flex {
+    display: none;
+  }
+
+  .container-mobile {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    padding: 20px;
+  }
+
+  .container-mobile h1 {
+    font-size: 2rem;
+    text-align: center;
+  }
 }
 </style>
